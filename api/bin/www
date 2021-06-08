@@ -23,6 +23,7 @@ const connectDb = ()=>{
   db.connection = db.mongoose.connection;
   return db.mongoose.connection;
 }
+
 let server = null;
 const startServer = () => {
   /**
@@ -145,9 +146,7 @@ async function createAsync(objToCreate, model){
   try{
     await model.create(objToCreate)
   } catch (err) {
-    throw new Error(err);
-    console.log(err);
-    
+    throw new Error(err);        
   }
 }
 
@@ -163,45 +162,16 @@ async function initialAsync(db, dropDb=true) {
   try {
     const rolesinDbcount = await Role.estimatedDocumentCount();
     if (rolesinDbcount === 0){
-      createAsync({})
+      await createAsync({'name'},db.role);
+      console.log("added 'user' to roles collection");
+      await createAsync({'moderator'},db.role);
+      console.log("added 'moderator' to roles collection");
+      await createAsync({'admin'},db.role);
+      console.log("added 'admin' to roles collection");
     }
   } catch (error) {
     console.log("dbError: ", err);
   }
-
-  Role.estimatedDocumentCount((err, count) => {
-    if (!err && count === 0) {
-      new Role({
-        name: "user"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'user' to roles collection");
-      });
-
-      new Role({
-        name: "moderator"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'moderator' to roles collection");
-      });
-
-      new Role({
-        name: "admin"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'admin' to roles collection");
-      });
-    }
-  });
 }
 
 let connection = connectDb()
@@ -212,7 +182,7 @@ let connection = connectDb()
   .on('disconnected', connectDb)
   .once('open', ()=>{
     startServer();
-    initial();
+    initialAsync(db, true);
   })
 
-module.exports = {connection, server}
+module.exports = {db, server}
