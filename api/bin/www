@@ -106,42 +106,6 @@ function onListening() {
   server.on('listening', onListening);
 }
 
-function initial() {
-  Role.estimatedDocumentCount((err, count) => {
-    if (!err && count === 0) {
-      new Role({
-        name: "user"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'user' to roles collection");
-      });
-
-      new Role({
-        name: "moderator"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'moderator' to roles collection");
-      });
-
-      new Role({
-        name: "admin"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'admin' to roles collection");
-      });
-    }
-  });
-}
-
 async function createAsync(objToCreate, model){
   try{
     await model.create(objToCreate)
@@ -150,23 +114,25 @@ async function createAsync(objToCreate, model){
   }
 }
 
-async function initialAsync(db, dropDb=true) {
+async function initialAsync(db,drop=false) {
   if (!db){
     throw new Error('No dbConnection provided ...');
     return;
   }
-  if(dropDb){
-    await db.connection.dropDatabase();
-  }
-  
   try {
-    const rolesinDbcount = await Role.estimatedDocumentCount();
+    if(drop){      
+      await db.role.collection.drop();
+    }
+  
+
+    const rolesinDbcount = await db.role.estimatedDocumentCount();
+    console.log(rolesinDbcount);
     if (rolesinDbcount === 0){
-      await createAsync({'name'},db.role);
+      await createAsync({name:'user'},db.role);
       console.log("added 'user' to roles collection");
-      await createAsync({'moderator'},db.role);
+      await createAsync({name:'moderator'},db.role);
       console.log("added 'moderator' to roles collection");
-      await createAsync({'admin'},db.role);
+      await createAsync({name:'admin'},db.role);
       console.log("added 'admin' to roles collection");
     }
   } catch (error) {
@@ -182,7 +148,7 @@ let connection = connectDb()
   .on('disconnected', connectDb)
   .once('open', ()=>{
     startServer();
-    initialAsync(db, true);
+    initialAsync(db, false);
   })
 
 module.exports = {db, server}
