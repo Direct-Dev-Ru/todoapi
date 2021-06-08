@@ -126,7 +126,6 @@ async function initialAsync(db,drop=false) {
   
 
     const rolesinDbcount = await db.role.estimatedDocumentCount();
-    console.log(rolesinDbcount);
     if (rolesinDbcount === 0){
       await createAsync({name:'user'},db.role);
       console.log("added 'user' to roles collection");
