@@ -20,7 +20,7 @@ const connectDb = ()=>{
     useUnifiedTopology: true,
   };
   db.mongoose.connect(db.config.mongoUri, options); 
-  
+  db.connection = db.mongoose.connection;
   return db.mongoose.connection;
 }
 let server = null;
@@ -141,20 +141,34 @@ function initial() {
   });
 }
 
-async function initialasync(dbConn, dropDb=true) {
-  if (!dbConn){
+async function createAsync(objToCreate, model){
+  try{
+    await model.create(objToCreate)
+  } catch (err) {
+    throw new Error(err);
+    console.log(err);
+    
+  }
+}
+
+async function initialAsync(db, dropDb=true) {
+  if (!db){
     throw new Error('No dbConnection provided ...');
     return;
   }
   if(dropDb){
-    await dbConn.dropDatabase();
+    await db.connection.dropDatabase();
   }
   
   try {
     const rolesinDbcount = await Role.estimatedDocumentCount();
+    if (rolesinDbcount === 0){
+      createAsync({})
+    }
   } catch (error) {
     console.log("dbError: ", err);
   }
+
   Role.estimatedDocumentCount((err, count) => {
     if (!err && count === 0) {
       new Role({
