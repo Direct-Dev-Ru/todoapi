@@ -146,8 +146,15 @@ async function initialasync(dbConn, dropDb=true) {
     throw new Error('No dbConnection provided ...');
     return;
   }
-  await dbConn.dropDatabase();
+  if(dropDb){
+    await dbConn.dropDatabase();
+  }
   
+  try {
+    const rolesinDbcount = await Role.estimatedDocumentCount();
+  } catch (error) {
+    console.log("dbError: ", err);
+  }
   Role.estimatedDocumentCount((err, count) => {
     if (!err && count === 0) {
       new Role({
