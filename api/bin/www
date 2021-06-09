@@ -13,7 +13,7 @@ const User = db.user;
 
 
 
-const connectDb = ()=>{  
+const connectDb = async ()=>{  
   db.mongoose.Promise = global.Promise;
   const options = {    
     useNewUrlParser: true, 
@@ -21,8 +21,14 @@ const connectDb = ()=>{
     useFindAndModify: false, 
     useCreateIndex : true ,
   };
-  db.mongoose.connect(db.config.mongoUri, options); 
-  db.connection = db.mongoose.connection;
+  try {
+    db.connection = await db.mongoose.connect(db.config.mongoUri, options);
+    console.log(db.connection);
+  } 
+  catch (error) {
+    console.log('Connect MongoDb Error: ', error);
+  }      
+  
   return db.mongoose.connection;
 }
 
@@ -141,13 +147,15 @@ async function initialAsync(db,drop=false) {
   }
 }
 
-let connection = connectDb()
+connectDb()
   .on('error', (err)=>{
     console.log(err);
     process.exit();
+  })  
+  .on('disconnected', ()=>{
+   connectDb();
   })
-  .on('disconnected', connectDb)
-  .once('open', ()=>{
+  .once('open', ()=>{    
     startServer();
     initialAsync(db, false);
   })
