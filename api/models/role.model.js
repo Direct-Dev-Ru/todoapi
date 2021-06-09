@@ -20,4 +20,18 @@ const roleSchema = new mongoose.Schema({
 });
 
 const Role = mongoose.model("Role", roleSchema);
+
+Role.allRoles = async () => {
+  let result = { isError: false, errorCode: 0, message: null };
+  try {
+    const roles = await Role.find({});
+    result.message = roles;
+  } catch (e) {
+    result.error = true;
+    result.errorCode = 500;
+    result.message = e;
+  }
+  return result;
+};
+
 module.exports = Role;
