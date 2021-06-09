@@ -8,6 +8,7 @@ const app = require("../app");
 const debug = require("debug")("api:server");
 const http = require("http");
 const db = require("../models");
+const bcrypt = require("bcryptjs");
 let server = null;
 
 (async function (db, server) {
@@ -155,6 +156,7 @@ let server = null;
           });
 
           initUser.roles = initUserRoles.map((role) => role._id);
+          initUser.password = bcrypt.hashSync(initUser.password, 8);
           const newUser = await createAsync(initUser, db.user);
           console.log(
             `added user ${newUser?._id} - ${newUser?.username} to roles collection`

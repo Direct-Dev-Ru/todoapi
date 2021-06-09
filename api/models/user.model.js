@@ -26,9 +26,6 @@ const userSchema = new mongoose.Schema({
   // Пароль
   password: {
     type: String,
-    maxlength: [32, "tooLong"],
-    minlength: [8, "tooShort"],
-    match: [/^[A-Za-z0-9]+$/, "passwordIncorrect"],
     required: [true, "passwordRequired"]
   },
   roles: [
