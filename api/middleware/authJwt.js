@@ -22,6 +22,29 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+const isRole = (roleToCheck) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId).populate("roles");
+      if (!user) {
+        res.status(200).send(getResObject(`User ${req.userId} not found`, 404));
+        return;
+      }
+      for (let i = 0; i < user?.roles.length ?? 0; i++) {
+        if (user?.roles[i].name === roleToCheck) {
+          next();
+          return;
+        }
+      }
+      res.status(200).send(getResObject(`Require ${roleToCheck} Role!`, 403));
+      return;
+    } catch (e) {
+      res.status(200).send(getResObject(e, 401));
+      return;
+    }
+  };
+};
+
 const isAdmin = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
@@ -40,13 +63,13 @@ const isAdmin = (req, res, next) => {
         }
 
         for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "admin") {
+          if (roles[i].name === "ADMIN") {
             next();
             return;
           }
         }
 
-        res.status(403).send({ message: "Require Admin Role!" });
+        res.status(403).send({ message: "Require ADMIN Role!" });
         return;
       }
     );
@@ -71,13 +94,13 @@ const isModerator = (req, res, next) => {
         }
 
         for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "moderator") {
+          if (roles[i].name === "MODERATOR") {
             next();
             return;
           }
         }
 
-        res.status(403).send({ message: "Require Moderator Role!" });
+        res.status(403).send({ message: "Require MODERATOR Role!" });
         return;
       }
     );
@@ -87,6 +110,7 @@ const isModerator = (req, res, next) => {
 const authJwt = {
   verifyToken,
   isAdmin,
+  isRole,
   isModerator
 };
 module.exports = authJwt;

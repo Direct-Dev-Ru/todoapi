@@ -1,5 +1,6 @@
 // Load mongoose
 const mongoose = require("mongoose");
+const { getResObject } = require("../helpers");
 // Create new scheme
 const roleSchema = new mongoose.Schema({
   name: {
@@ -22,7 +23,7 @@ const roleSchema = new mongoose.Schema({
 const Role = mongoose.model("Role", roleSchema);
 
 Role.allRoles = async () => {
-  let result = { isError: false, errorCode: 0, message: null };
+  let result = getResObject("", 0);
   try {
     const roles = await Role.find({});
     result.message = roles;
