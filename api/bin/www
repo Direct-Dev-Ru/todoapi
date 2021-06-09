@@ -13,7 +13,9 @@ const User = db.user;
 let server = null;
 
 (async function(db, server) {
-const connectDb = async ()=>{  
+  console.log("1.main f starts");
+const connectDb = async (initial=true)=>{  
+  console.log("2.connectDb f starts");
   db.mongoose.Promise = global.Promise;
   const options = {    
     useNewUrlParser: true, 
@@ -29,62 +31,51 @@ const connectDb = async ()=>{
   try {
     await db.mongoose.connect(db.config.mongoUri, options);
     db.connection = db.mongoose.connection;
-    db.connection.on('error', (err)=>{
-      console.log('MongoDb error:', err);
-      process.exit();
-    })  
-    .on('disconnected', connectDb)
-    .once('open', ()=>{    
+    console.log("2.connectDb func step2");
+    if (initial){
+      console.log("connected");
       startServer();
       initialAsync(db, false);
-    })
-    
+    }
   } 
   catch (error) {
     console.log('Connect MongoDb Error: ', error);
   }      
   
-  // return db.mongoose.connection;
-  return db.connection;
+  return db.mongoose.connection;
+  //return db.connection;
 };
 
 const startServer = () => {
   /**
   * Get port from environment and store in Express.
   */
+  console.log("starting server ...");
   const defaultPort='8080'
   const port = normalizePort(process.env.PORT || defaultPort);
   app.set('port', port);
-
   /**
   * Create HTTP server.
   */
   server = http.createServer(app);
-
   /**
   * Normalize a port into a number, string, or false.
   */
-
   function normalizePort(val) {
     const port = parseInt(val, 10);
-
     if (isNaN(port)) {
       // named pipe
       return val;
     }
-
     if (port >= 0) {
       // port number
       return port;
     }
-
     return false;
 }
-
 /**
  * Event listener for HTTP server "error" event.
- */
-
+*/
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -127,6 +118,7 @@ function onListening() {
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);
+
 }
 
 async function createAsync(objToCreate, model){
@@ -162,7 +154,14 @@ async function initialAsync(db,drop=false) {
   }
 }
 
-await connectDb();
+connectDb(true).then(()=>{
+db.mongoose.connection
+.on('error', (err)=>{
+  console.log('MongoDb error:', err);
+  process.exit();
+})  
+.on('disconnected', ()=>connectDb(false))
+});
 })(db,server);  
 
 module.exports = {db, server}
