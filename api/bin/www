@@ -18,6 +18,8 @@ const connectDb = ()=>{
   const options = {    
     useNewUrlParser: true, 
     useUnifiedTopology: true,
+    useFindAndModify: false, 
+    useCreateIndex : true ,
   };
   db.mongoose.connect(db.config.mongoUri, options); 
   db.connection = db.mongoose.connection;
