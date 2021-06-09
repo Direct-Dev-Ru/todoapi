@@ -4,4 +4,12 @@ const MONGOURI =
 module.exports = {
   mongoUri: MONGOURI,
   secret: "fjsdiovfywefyba423234sd53268aguhq4234eraghvnfadjiv24523",
+  roles: ["admin", "moderator", "user", "guest"],
+  admin: {
+    username: "admin",
+    email: "admin@admin.com",
+    password: "PaSsWoRd",
+    resetPwd: true,
+    roles: ["admin", "moderator"]
+  }
 };

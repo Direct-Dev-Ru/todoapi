@@ -33,10 +33,22 @@ const userSchema = new mongoose.Schema({
   },
   roles: [
     {
-      type: mongoose.Schema.Types.ObjectId,      
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Role"
     }
   ],
+  resetPwd: {
+    type: Boolean,
+    default: true
+  },
+  title: {
+    type: String, // тип: String
+    trim: true
+  },
+  department: {
+    type: String, // тип: String
+    trim: true
+  },
   created: {
     type: Date,
     default: Date.now
