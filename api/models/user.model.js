@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     type: String, // тип: String
     required: [true, "usernameRequired"],
     maxlength: [32, "usernameTooLong"],
-    minlength: [6, "usernameTooShort"],
+    minlength: [3, "usernameTooShort"],
     match: [/^[a-z0-9]+$/, "usernameIncorrect"],
     unique: true,
     lowercase: true,

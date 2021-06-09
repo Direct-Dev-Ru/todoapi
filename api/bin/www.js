@@ -119,7 +119,7 @@ let server = null;
    */
   async function createAsync(objToCreate, model) {
     try {
-      await model.create(objToCreate);
+      return await model.create(objToCreate);
     } catch (e) {
       throw new Error(e);
     }
@@ -138,21 +138,24 @@ let server = null;
       if (rolesInUsers === 0) {
         const initUser = { ...db.config.admin };
         const initRoles = [...db.config.roles];
-        await db.role.collection.drop();
-        initRoles.forEach(async (initRole) => {
+        try {
+          await db.role.collection.drop();
+        } catch (e) {}
+
+        for (const initRole of initRoles) {
           const newRole = await createAsync({ name: initRole }, db.role);
           console.log(
             `added ${newRole?._id} - ${newRole?.name} to roles collection`
           );
-        });
+        }
 
         if (initRoles) {
-          const initUserRoles = db.role.find({
+          const initUserRoles = await db.role.find({
             name: { $in: initRoles }
           });
 
           initUser.roles = initUserRoles.map((role) => role._id);
-          const newUser = await createAsync(initUser, db.role);
+          const newUser = await createAsync(initUser, db.user);
           console.log(
             `added user ${newUser?._id} - ${newUser?.username} to roles collection`
           );
