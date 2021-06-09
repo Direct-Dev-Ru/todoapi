@@ -2,10 +2,10 @@
   "name": "nodejs-20210608-006",
   "version": "1.0.0",
   "description": "",
-  "main": "api/bin/www",
+  "main": "api/bin/www.js",
   "scripts": {
     "startDev": "nodemon src/index.js",
-    "start": "nodemon ../api/bin/www"
+    "start": "nodemon ../api/bin/www.js"
   },
   "license": "ISC",
   "dependencies": {
