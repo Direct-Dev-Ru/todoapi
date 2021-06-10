@@ -12,9 +12,14 @@ const options = {
   // socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
   family: 4 // Use IPv4, skip trying IPv6
 };
-db.mongoose.connect(db.config.mongoUri, options);
-db.connection = db.mongoose.connection
-  .then(() => {
-    console.log("connected to mongo db");
-  })
-  .catch((error) => console.log);
+if (!db.connection) {
+  console.log("connecting to mongo db ...");
+  db.mongoose.connect(db.config.mongoUri, options);
+  db.connection = db.mongoose.connection
+    .then(() => {
+      console.log("connected to mongo db ..." + db.about);
+    })
+    .catch((error) => console.log);
+} else {
+  console.log("already connected");
+}

@@ -3,7 +3,7 @@ mongoose.Promise = global.Promise;
 const config = require("../config");
 
 const db = {};
-
+db.about = "________";
 db.mongoose = mongoose;
 db.config = config;
 

@@ -30,9 +30,10 @@ let server = null;
     try {
       await db.mongoose.connect(db.config.mongoUri, options);
       db.connection = db.mongoose.connection;
-      console.log("2.connectDb func step2");
+      db.about = "todoapp";
+      console.log("2.connectDb function step 2 starts");
       if (initial) {
-        console.log("connected");
+        console.log("connected to mongo db " + db.about);
         startServer();
         initialAsync(db, false);
       }
