@@ -11,10 +11,11 @@ function fakeResponse() {
 
   function status(code) {
     __inner.code = code;
+    return this;
   }
   function send(object) {
     __inner.send = object;
-    console.log(__inner);
+    console.log("fake response send object:", object);
   }
 
   return Object.freeze({

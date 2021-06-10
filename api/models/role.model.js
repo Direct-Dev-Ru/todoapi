@@ -36,8 +36,9 @@ Role.allRoles = async () => {
   return result;
 };
 
-Role.getDbIds = async (rolesIn = ["USER"]) => {
+Role.getDbIds = async (rolesInParam = ["USER"]) => {
   try {
+    const rolesIn = rolesInParam?.length === 0 ?? 0 ? ["USER"] : rolesInParam;
     logger(rolesIn, "transform params:");
 
     const allRolesObject = await Role.allRoles();

@@ -27,14 +27,15 @@ async function testAllRoles() {
       .then(async () => {
         console.log("connected to mongo db ...");
         // console.log(await test.testAllRoles());
-        const transRoles = await db.role.getDbIds(["ADMIN", "moderator"]);
-        db.log(transRoles, "transRoles result: ");
+        // const transRoles = await db.role.getDbIds(["ADMIN", "moderator"]);
+        // db.log(transRoles, "transRoles result: ");
         const req = new fakeRequest({
           body: {
             username: "Pasha",
             fullname: "Pavel Faker",
             email: "pavel@drom.ru",
             password: "durimar45"
+            // roles: ["mOdeRator"]
           }
         });
         const res = new fakeResponse();

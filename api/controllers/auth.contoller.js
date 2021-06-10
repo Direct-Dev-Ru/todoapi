@@ -13,11 +13,15 @@ exports.signup = async (req, res) => {
     fullname: req.body.fullname,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    resetPwd: true
+    resetPwd: true,
+    roles: []
   });
   try {
-    let candidateRoles = req.body.roles ?? [];
-    candidateRoles = Array.isArray(candidateRoles) ? candidateRoles : [];
+    let candidateRoles = req.body.roles;
+    candidateRoles = Array.isArray(candidateRoles) ? candidateRoles : ["USER"];
+
+    db.log(candidateRoles, "auth.controller roles from req: ");
+
     const bdRolesObject = await Role.getDbIds(candidateRoles);
     const { isError, message: bdRoles } = bdRolesObject;
     if (isError) {
@@ -25,7 +29,9 @@ exports.signup = async (req, res) => {
       return;
     }
     candidate.roles = bdRoles;
-    candidate.save();
+    const newUser = await candidate.save();
+    res.status(200).send(getResObject(newUser, 0));
+    return;
   } catch (e) {
     res.status(200).send(getResObject(e, 500));
     return;
