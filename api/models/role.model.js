@@ -1,6 +1,7 @@
 // Load mongoose
 const mongoose = require("mongoose");
-const { getResObject } = require("../helpers");
+const { logger, getResObject } = require("../helpers");
+
 // Create new scheme
 const roleSchema = new mongoose.Schema({
   name: {
@@ -37,18 +38,21 @@ Role.allRoles = async () => {
 
 Role.transform = async (rolesIn = ["USER"]) => {
   try {
+    logger(rolesIn, "transform params:");
+
     const allRolesObject = await Role.allRoles();
-    const { isError, bdRoles } = allRolesObject;
+    const { isError, message: bdRoles } = allRolesObject;
     if (!isError && (bdRoles?.length ?? 0) > 0) {
       const rolesOut = rolesIn.map((roleIn) => {
         return bdRoles.find(
           (bdRole) =>
-            bdRole.name.toUpperCase.trim() === roleIn.name.toUpperCase.trim()
-        )?.name;
+            bdRole.name.toUpperCase().trim() === roleIn.toUpperCase().trim()
+        )?._id;
       });
+      logger(rolesOut, "result rolesOut: ");
       return getResObject(rolesOut, 0);
     } else {
-      return allRolesObject;
+      return getResObject("roles empty in db", 401);
     }
   } catch (e) {
     console.error(e);
