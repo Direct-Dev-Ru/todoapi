@@ -5,7 +5,8 @@
   "main": "api/bin/www.js",
   "scripts": {
     "startDev": "nodemon src/index.js",
-    "start": "nodemon ../api/bin/www.js"
+    "start": "nodemon api/bin/www.js",
+    "test": "LOG=true node api/bin/test.js"
   },
   "license": "ISC",
   "dependencies": {

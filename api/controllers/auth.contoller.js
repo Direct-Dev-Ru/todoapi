@@ -16,31 +16,15 @@ exports.signup = async (req, res) => {
     resetPwd: true
   });
   try {
-    let bdRoles = await Role.allRoles();
-    bdRoles = bdRoles ?? [];
-    const candidateRoles = req.body.roles ?? [];
-
-    if (candidateRoles.length > 0 && (bdRoles ?? []).length === 0) {
-      res.status(200).send(getResObject("No Roles in BD", 400));
+    let candidateRoles = req.body.roles ?? [];
+    candidateRoles = Array.isArray(candidateRoles) ? candidateRoles : [];
+    const bdRolesObject = await Role.getDbIds(candidateRoles);
+    const { isError, message: bdRoles } = bdRolesObject;
+    if (isError) {
+      res.status(200).send(JSON);
       return;
     }
-    candidate.roles = [];
-    candidateRoles.forEach((candidateRole) => {
-      const bdRole = bdRoles.find((role) => candidateRole === role.name);
-      if (!bdRole) {
-        res
-          .status(200)
-          .send(
-            getResObject(
-              `Can not map role ${candidateRole} to one of bdRoles`,
-              400
-            )
-          );
-        return;
-      }
-      candidate.roles.push(bdRole._id);
-    });
-
+    candidate.roles = bdRoles;
     candidate.save();
   } catch (e) {
     res.status(200).send(getResObject(e, 500));

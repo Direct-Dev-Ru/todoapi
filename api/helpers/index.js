@@ -1,4 +1,5 @@
 const resHelpers = require("./response");
+const reqHelpers = require("./request");
 
 const mainHelper = {};
 
@@ -9,4 +10,4 @@ mainHelper.logger = (message, id) => {
   }
 };
 
-module.exports = { ...mainHelper, ...resHelpers };
+module.exports = { ...mainHelper, ...resHelpers, ...reqHelpers };

@@ -1,11 +1,12 @@
 const db = require("../models");
-const { logger } = require("../helpers");
+const { logger, fakeRequest, fakeResponse } = require("../helpers");
 
 async function testAllRoles() {
   return await db.role.allRoles();
 }
 
 (async (db, test) => {
+  const { signup } = require("../controllers");
   db.log = logger;
   db.mongoose.Promise = global.Promise;
   const options = {
@@ -26,11 +27,21 @@ async function testAllRoles() {
       .then(async () => {
         console.log("connected to mongo db ...");
         // console.log(await test.testAllRoles());
-        const transRoles = await db.role.transform(["ADMIN", "moderator"]);
+        const transRoles = await db.role.getDbIds(["ADMIN", "moderator"]);
         db.log(transRoles, "transRoles result: ");
+        const req = new fakeRequest({
+          body: {
+            username: "Pasha",
+            fullname: "Pavel Faker",
+            email: "pavel@drom.ru",
+            password: "durimar45"
+          }
+        });
+        const res = new fakeResponse();
+        signup(req, res);
       })
       .catch((error) => console.log);
   } else {
     console.log("already connected");
   }
-})(db, { testAllRoles, logger });
+})(db, { testAllRoles, logger, fakeRequest, fakeResponse });

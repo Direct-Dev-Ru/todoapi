@@ -36,23 +36,32 @@ Role.allRoles = async () => {
   return result;
 };
 
-Role.transform = async (rolesIn = ["USER"]) => {
+Role.getDbIds = async (rolesIn = ["USER"]) => {
   try {
     logger(rolesIn, "transform params:");
 
     const allRolesObject = await Role.allRoles();
     const { isError, message: bdRoles } = allRolesObject;
     if (!isError && (bdRoles?.length ?? 0) > 0) {
+      let result = null;
       const rolesOut = rolesIn.map((roleIn) => {
-        return bdRoles.find(
+        const bdRoleId = bdRoles.find(
           (bdRole) =>
             bdRole.name.toUpperCase().trim() === roleIn.toUpperCase().trim()
         )?._id;
+        if (!bdRoleId) {
+          result = getResObject(
+            `Role ${roleIn} not found in database ...`,
+            404
+          );
+          return null;
+        }
+        return bdRoleId;
       });
       logger(rolesOut, "result rolesOut: ");
-      return getResObject(rolesOut, 0);
+      return result ? result : getResObject(rolesOut, 0);
     } else {
-      return getResObject("roles empty in db", 401);
+      return getResObject("roles empty in db", 404);
     }
   } catch (e) {
     console.error(e);
