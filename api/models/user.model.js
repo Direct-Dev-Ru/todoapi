@@ -64,13 +64,13 @@ const User = mongoose.model("User", userSchema);
 
 User.getUser = async (filterValue, filterType = "email") => {
   // if U wanna by username - pass username string to filterType
-  logger("finding user by " + filterType + ": ", "User.getUser :");
+  // logger("finding user by " + filterType + ": ", "User.getUser :");
   const filter = {};
   filter[filterType] = filterValue.toLowerCase().trim();
-  logger(filter, "User.getUser :");
-  const user = await User.find(filter).populate("roles");
+  // logger(filter, "User.getUser :");
+  const user = await User.findOne(filter).populate("roles").lean();
 
-  if (!user) {
+  if (user) {
     logger(
       `find user by ${filterType} : ${user._id.toString()}`,
       "User.getUser :"

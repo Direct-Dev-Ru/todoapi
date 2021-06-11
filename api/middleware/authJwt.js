@@ -32,8 +32,11 @@ const isRole = (roleToCheck) => {
       }
       for (let i = 0; i < user?.roles.length ?? 0; i++) {
         if (user?.roles[i].name === roleToCheck.toUpperCase().trim()) {
-          next();
-          logger("Role ", "isRole :");
+          if (next) next();
+          logger(
+            `Role ${roleToCheck} presents in user ${req.userId} roles`,
+            "isRole :"
+          );
           return;
         }
       }

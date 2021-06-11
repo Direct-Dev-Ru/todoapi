@@ -31,7 +31,8 @@ async function testAllRoles() {
         // console.log(await test.testAllRoles());
         // const transRoles = await db.role.getDbIds(["ADMIN", "moderator"]);
         // db.log(transRoles, "transRoles result: ");
-        const req = new fakeRequest({
+        let req = new fakeRequest({
+          userId: null,
           body: {
             username: "Pasha",
             fullname: "Pavel Faker",
@@ -45,22 +46,19 @@ async function testAllRoles() {
 
         // findUserTest
         let userFromBd = await db.user.getUser("admin", "username");
-        // userFromBd = await db.user
-        //   .find({ username: "admin" })
-        //   .populate("roles");
-        // const userId = await userFromBd._id.toString();
+        const userId = userFromBd._id.toString();
         db.log(
           // JSON.stringify({ userId: userFromBd["_id"] }, null, "\t"),
-          userFromBd,
+          userId,
           "search user result: "
         );
-        req.body = {
-          ...req.body,
-          ...userFromBd,
-          ...{ userId: userFromBd._id }
-        };
-        db.log(req.body, "req.body: ");
-        authJwt.isRole("odmin")(req, res);
+        // db.log(userFromBd, "search user result 2: ");
+        req = new fakeRequest({
+          userId: userId
+        });
+
+        db.log(req, "req: ");
+        authJwt.isRole("admi3n")(req, res);
       })
       .catch((error) => console.log);
   } else {

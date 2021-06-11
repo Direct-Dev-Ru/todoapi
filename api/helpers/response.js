@@ -17,6 +17,7 @@ function fakeResponse() {
     __inner.send = object;
     console.log("fake response send object:", object);
   }
+  function next() {}
   function json(object) {
     __inner.send = object;
     console.log(
@@ -28,6 +29,7 @@ function fakeResponse() {
   return Object.freeze({
     data: __inner,
     send,
+    next,
     json,
     status
   });
