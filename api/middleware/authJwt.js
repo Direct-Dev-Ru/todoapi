@@ -33,10 +33,6 @@ const isRole = (roleToCheck) => {
       for (let i = 0; i < user?.roles.length ?? 0; i++) {
         if (user?.roles[i].name === roleToCheck.toUpperCase().trim()) {
           if (next) next();
-          logger(
-            `Role ${roleToCheck} presents in user ${req.userId} roles`,
-            "isRole :"
-          );
           return;
         }
       }
@@ -49,16 +45,21 @@ const isRole = (roleToCheck) => {
   };
 };
 
-const isAdmin = (req, res, next) => isRole("ADMIN");
-
-const isModerator = (req, res, next) => isRole("MODERATOR");
-
-const isUser = (req, res, next) => isRole("USER");
+const isAdmin = async (req, res, next) => {
+  return await isRole("ADMIN")(req, res, next);
+};
+const isModerator = async (req, res, next) => {
+  return await isRole("MODERATOR")(req, res, next);
+};
+const isUser = async (req, res, next) => {
+  return await isRole("USER")(req, res, next);
+};
 
 const authJwt = {
   verifyToken,
   isAdmin,
   isRole,
-  isModerator
+  isModerator,
+  isUser
 };
 module.exports = authJwt;

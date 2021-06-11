@@ -65,10 +65,22 @@ async function testAllRoles() {
         });
 
         db.log(req, "req: ");
-        authJwt.isRole("admin")(req, res);
-        await verifySignUp.checkRolesExisted(req, res, () => {
-          db.log("passing success", "verifySignUp: ");
-        });
+        await authJwt.isRole("admin")(req, res, () =>
+          db.log("passing success", "isRole: ")
+        );
+        await authJwt.isAdmin(req, res, () =>
+          db.log("passing success", "isAdmin: ")
+        );
+        await authJwt.isModerator(req, res, () =>
+          db.log("passing success", "isModerator: ")
+        );
+        await authJwt.isUser(req, res, () =>
+          db.log("passing success", "isUser: ")
+        );
+
+        await verifySignUp.checkRolesExisted(req, res, () =>
+          db.log("passing success", "verifySignUp: ")
+        );
       })
       .catch((error) => console.log);
   } else {
