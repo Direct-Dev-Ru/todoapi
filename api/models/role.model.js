@@ -26,7 +26,7 @@ const Role = mongoose.model("Role", roleSchema);
 Role.allRoles = async () => {
   let result = getResObject("", 0);
   try {
-    const roles = await Role.find({});
+    const roles = await Role.find({}).lean();
     result.message = roles ?? [];
   } catch (e) {
     result.error = true;

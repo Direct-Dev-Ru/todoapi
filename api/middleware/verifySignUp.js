@@ -1,6 +1,7 @@
 const db = require("../models");
 const { getResObject } = require("../helpers");
-const Role = db.roles;
+const { log } = require("debug");
+const Role = db.role;
 const User = db.user;
 
 const checkUsernameOrEmailDuplication = async (req, res, next) => {
@@ -53,20 +54,26 @@ const checkRolesExisted = async (req, res, next) => {
   try {
     if (req.body.roles) {
       const allRoles = await Role.allRoles();
-      if (allRoles.errorCode) {
+      if (allRoles.isError) {
         res
           .status(200)
-          .send(getResObject(allRoles.message, allRoles.errorCode));
+          .json(getResObject(allRoles.message, allRoles.errorCode));
         return;
       }
+      const bdRoles = allRoles.message;
+      //db.log(bdRoles, "checkRolesExisted :");
       for (let i = 0; i < req.body.roles.length; i++) {
-        if (!allRoles.message.includes(req.body.roles[i])) {
+        if (
+          !bdRoles.find(
+            (bdRole) => req.body.roles[i].toUpperCase().trim() === bdRole.name
+          )
+        ) {
           res
             .status(200)
-            .send(
+            .json(
               getResObject(
                 `Failed! Role ${req.body.roles[i]} does not exist in database!`,
-                400
+                404
               )
             );
           return;

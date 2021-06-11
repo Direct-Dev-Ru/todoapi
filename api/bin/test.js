@@ -8,7 +8,8 @@ async function testAllRoles() {
 
 (async (db, test) => {
   const { signup } = require("../controllers");
-  const { authJwt } = require("../middleware");
+  const { authJwt, verifySignUp } = require("../middleware");
+
   db.log = logger;
   db.mongoose.Promise = global.Promise;
   const options = {
@@ -27,8 +28,10 @@ async function testAllRoles() {
     db.mongoose.connect(db.config.mongoUri, options);
     db.connection = db.mongoose.connection
       .then(async () => {
-        console.log("connected to mongo db ...");
-        // console.log(await test.testAllRoles());
+        db.log("connected to mongo db ...", "test logs: ");
+        // const allRoles = await test.testAllRoles();
+        // db.log(allRoles.message, "All Roles :");
+
         // const transRoles = await db.role.getDbIds(["ADMIN", "moderator"]);
         // db.log(transRoles, "transRoles result: ");
         let req = new fakeRequest({
@@ -53,12 +56,19 @@ async function testAllRoles() {
           "search user result: "
         );
         // db.log(userFromBd, "search user result 2: ");
+
         req = new fakeRequest({
-          userId: userId
+          userId: userId,
+          body: {
+            roles: ["ADMIN", "USER"]
+          }
         });
 
         db.log(req, "req: ");
-        authJwt.isRole("admi3n")(req, res);
+        authJwt.isRole("admin")(req, res);
+        await verifySignUp.checkRolesExisted(req, res, () => {
+          db.log("passing success", "verifySignUp: ");
+        });
       })
       .catch((error) => console.log);
   } else {

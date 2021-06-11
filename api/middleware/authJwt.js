@@ -49,67 +49,11 @@ const isRole = (roleToCheck) => {
   };
 };
 
-const isAdmin = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
+const isAdmin = (req, res, next) => isRole("ADMIN");
 
-    Role.find(
-      {
-        _id: { $in: user.roles }
-      },
-      (err, roles) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
+const isModerator = (req, res, next) => isRole("MODERATOR");
 
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "ADMIN") {
-            next();
-            return;
-          }
-        }
-
-        res.status(403).send({ message: "Require ADMIN Role!" });
-        return;
-      }
-    );
-  });
-};
-
-const isModerator = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    Role.find(
-      {
-        _id: { $in: user.roles }
-      },
-      (err, roles) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "MODERATOR") {
-            next();
-            return;
-          }
-        }
-
-        res.status(403).send({ message: "Require MODERATOR Role!" });
-        return;
-      }
-    );
-  });
-};
+const isUser = (req, res, next) => isRole("USER");
 
 const authJwt = {
   verifyToken,
