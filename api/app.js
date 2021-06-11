@@ -5,6 +5,9 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const sassMiddleware = require("node-sass-middleware");
 const cors = require("cors");
+// const config = require("./config");
+// const db = require("./models");
+// const { wrapAsync } = require("./helpers");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
