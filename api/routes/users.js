@@ -10,10 +10,10 @@ router.get(
   "/",
   wrapAsync(async function (req, res, next) {
     let allUsers = await User.find({}).populate("roles");
-
+    allUsers = null;
     console.log(allUsers);
     console.log(allUsers[0].roles[0]);
-    res.json(getResObject(allUsers, 0));
+    res.status(200).json(getResObject(allUsers, 0));
   })
 );
 

@@ -7,7 +7,7 @@ const sassMiddleware = require("node-sass-middleware");
 const cors = require("cors");
 // const config = require("./config");
 // const db = require("./models");
-// const { wrapAsync } = require("./helpers");
+const { getResObject } = require("./helpers");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -54,8 +54,11 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+  // res.status(err.status || 500);
+  // res.render("error");
+  res
+    .status(200)
+    .json(getResObject(err.message + ". " + err.stack, err.status || 500));
 });
 
 module.exports = app;
