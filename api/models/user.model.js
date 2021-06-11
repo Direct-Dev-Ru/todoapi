@@ -1,6 +1,6 @@
-// Load mongoose
 const mongoose = require("mongoose");
-// Create new scheme
+const { logger, getResObject } = require("../helpers");
+
 const userSchema = new mongoose.Schema({
   // login
   username: {
@@ -61,4 +61,25 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+User.getUser = async (filterValue, filterType = "email") => {
+  // if U wanna by username - pass username string to filterType
+  logger("finding user by " + filterType + ": ", "User.getUser :");
+  const filter = {};
+  filter[filterType] = filterValue.toLowerCase().trim();
+  logger(filter, "User.getUser :");
+  const user = await User.find(filter).populate("roles");
+
+  if (!user) {
+    logger(
+      `find user by ${filterType} : ${user._id.toString()}`,
+      "User.getUser :"
+    );
+    return user;
+  }
+  logger(` user by ${filterType} not found`, "User.getUser :");
+
+  return null;
+};
+
 module.exports = User;

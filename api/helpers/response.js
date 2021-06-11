@@ -17,10 +17,18 @@ function fakeResponse() {
     __inner.send = object;
     console.log("fake response send object:", object);
   }
+  function json(object) {
+    __inner.send = object;
+    console.log(
+      "fake response json object send:",
+      JSON.stringify(object, null, "\t")
+    );
+  }
 
   return Object.freeze({
     data: __inner,
     send,
+    json,
     status
   });
 }

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 const db = require("../models");
-const { getResObject } = require("../helpers");
+const { logger, getResObject } = require("../helpers");
 const User = db.user;
 const Role = db.role;
 
@@ -10,12 +10,12 @@ const verifyToken = (req, res, next) => {
 
   if (!token) {
     // return res.status(403).send({ message: "No token provided!" });
-    return res.status(200).send(getResObject("No token provided!", 403));
+    return res.status(200).json(getResObject("No token provided!", 403));
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(200).send(getResObject("Unauthorized!", 401));
+      return res.status(200).json(getResObject("Unauthorized!", 401));
     }
     req.userId = decoded.id;
     next();
@@ -27,12 +27,13 @@ const isRole = (roleToCheck) => {
     try {
       const user = await User.findById(req.userId).populate("roles");
       if (!user) {
-        res.status(200).send(getResObject(`User ${req.userId} not found`, 404));
+        res.status(200).json(getResObject(`User ${req.userId} not found`, 404));
         return;
       }
       for (let i = 0; i < user?.roles.length ?? 0; i++) {
-        if (user?.roles[i].name === roleToCheck) {
+        if (user?.roles[i].name === roleToCheck.toUpperCase().trim()) {
           next();
+          logger("Role ", "isRole :");
           return;
         }
       }
